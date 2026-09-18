@@ -1,0 +1,9 @@
+# 本机个人配置：含绝对路径，不入库（用 references/vault.example.json 作模板）
+references/vault.json
+
+# Python
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
