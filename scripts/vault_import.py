@@ -7,6 +7,11 @@ DEFAULT=Path(__file__).resolve().parents[1]/'references/vault.json'
 IMAGE=re.compile(r'!\[([^\]\n]*)\]\(([^\s\)]+)\)')
 ALLOWED={'.png','.jpg','.jpeg','.gif','.webp','.svg','.avif','.bmp'}
 def sha(data):return hashlib.sha256(data).hexdigest()
+def sha_file(path):
+    digest=hashlib.sha256()
+    with path.open('rb') as source:
+        for chunk in iter(lambda:source.read(1024*1024),b''):digest.update(chunk)
+    return digest.hexdigest()
 def inside(root,path):
     root=root.resolve();path=path.resolve()
     if path!=root and root not in path.parents:raise ValueError('Path escapes allowed root: '+str(path))
@@ -25,7 +30,7 @@ def prepare(a):
     for p in a.source:
         p=p.resolve()
         if not p.is_file():raise ValueError('Source missing: '+str(p))
-        src.append({'name':p.name,'sha256':sha(p.read_bytes())})
+        src.append({'name':p.name,'sha256':sha_file(p)})
     key=sha(json.dumps([x['sha256'] for x in src]).encode())
     receipts=inside(folder,folder/'.classroom-imports');existing=[]
     if receipts.is_dir():

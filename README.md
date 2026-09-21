@@ -1,6 +1,6 @@
 # classroom-notes · 课堂笔记入库技能
 
-把课堂课件（手机照片 / PPTX / PDF）**逐张核对、完整摘录**，整理成 Obsidian 带图课堂笔记，并按「日期 + 学科」直接写入你的 Obsidian 库。
+把课堂课件（手机照片 / PPTX / PDF）与可选课堂录音**逐张核对、完整摘录**，整理成 Obsidian 带图课堂笔记，并按「日期 + 学科」直接写入你的 Obsidian 库。
 
 这是一个 Agent Skill：`SKILL.md` 描述流程与边界，`references/` 放笔记风格与配置，`scripts/` 放可执行的确定性脚本。
 
@@ -29,6 +29,14 @@ $EDITOR references/vault.json
 python3 scripts/check_environment.py   # 自检：库路径、目录、可选工具是否就绪
 ```
 
+## 可选：本地课堂录音插件
+
+仓库内的 [plugins/dsh-classroom-audio](plugins/dsh-classroom-audio/README.md) 提供 1.1.1 版录音插件，安装和模型准备见其说明。Apple Silicon 上默认使用本地 Qwen3-ASR，不需要云端 Key；两份录音保留独立时间轴，逐份完成后读取并按知识点融合。
+
+新版本地识别不注入课件词表，避免提示词复述与对齐失败；分段验证通过后才缓存。主技能新增有界等待脚本，并修复 macOS LibreOffice 回退渲染的中文字体缓存。
+
+插件代码更新后应退出旧 DSH 再启动；同一个 web 端口不能同时运行两个实例。关闭网页不会退出后台服务。
+
 ## 配置 `references/vault.json`
 
 | 字段 | 说明 |
@@ -42,7 +50,7 @@ python3 scripts/check_environment.py   # 自检：库路径、目录、可选工
 
 ## 依赖
 
-- **Python 3**：脚本只用标准库，无需 pip 安装。
+- **Python 3**：课件提取与入库脚本只用标准库；可选录音插件需要独立 Python 环境和模型，见插件说明。
 - **照片输入**：需要支持图片的模型 + `read_image`；macOS 上可用 `scripts/vision_ocr.swift`（Swift + Vision 框架）做纯文字 OCR 兜底 —— 它读不出图示、箭头与版式，只能算初稿。
 - **PPTX / PDF 渲染**（可选，用于视觉核对）：macOS 上优先 Microsoft PowerPoint 高保真导出，失败时回退 LibreOffice；PDF 转逐页 PNG 需要 Poppler 的 `pdftoppm`。也可用环境变量 `CLASSROOM_SOFFICE`、`CLASSROOM_PDFTOPPM` 指定路径。
 
@@ -84,6 +92,10 @@ python3 scripts/vault_import.py commit --course 地质学 --title '2026-09-13 �
 
 不适用：普通知识问答、论文检索、把已有笔记改写成摘要。
 
+## 发布内容与隐私
+
+仓库只分发技能、插件源代码、合成测试和通用配置模板。不要提交 references/vault.json、DSH 凭据库、环境变量文件、录音、课件原件、转写、会话日志、模型或运行缓存。插件的 .gitignore 和包文件白名单排除这些内容；提交前仍需检查暂存区。
+
 ## 许可
 
-[MIT](LICENSE)。笔记风格与核对规则是本技能的主要价值，欢迎按自己的课程改造 `references/` 下的规则。
+主技能适用 [MIT](LICENSE)。可选录音插件保留其 package.json 的 UNLICENSED 标记；第三方模型和运行时适用各自许可。笔记风格与核对规则是本技能的主要价值，欢迎按自己的课程改造 `references/` 下的规则。

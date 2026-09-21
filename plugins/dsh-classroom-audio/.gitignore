@@ -1,0 +1,43 @@
+# Generated dependencies and runtime state
+node_modules
+.venv/
+__pycache__/
+*.py[cod]
+.DS_Store
+.dsh/
+.dsh-work/
+models/
+work/
+outputs/
+coverage/
+*.log
+*.tmp
+# Private configuration and credentials
+.env
+.env.*
+!.env.example
+.npmrc
+credentials*
+secrets*
+*.key
+*.pem
+*.p12
+references/vault.json
+# User materials, sessions, and generated transcripts
+*.jsonl
+*.wav
+*.mp3
+*.m4a
+*.aiff
+*.flac
+*.mp4
+*.pdf
+*.pptx
+*.docx
+*.xlsx
+*.zip
+*.tgz
+*.raw.json
+*.transcript.*
+job.json
+local-state.json

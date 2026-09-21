@@ -10,6 +10,7 @@ import re
 import shutil
 import subprocess
 import tempfile
+from xml.sax.saxutils import escape
 from pathlib import Path
 
 
@@ -30,7 +31,7 @@ def find_tool(name, env_name, extra=()):
     )
 
 
-def run(command, timeout, input_text=None):
+def run(command, timeout, input_text=None, env=None):
     result = subprocess.run(
         command,
         input=input_text,
@@ -39,6 +40,7 @@ def run(command, timeout, input_text=None):
         stderr=subprocess.PIPE,
         timeout=timeout,
         check=False,
+        env=env,
     )
     if result.returncode:
         detail = (result.stderr or result.stdout).strip()
@@ -78,6 +80,24 @@ end run
     return "powerpoint", str(app)
 
 
+def font_environment(out):
+    """Use an isolated fresh fontconfig cache for macOS bundled LibreOffice."""
+    env = os.environ.copy()
+    if platform.system() != "Darwin":
+        return env
+    directory = out / "fontconfig"
+    cache = directory / "cache"
+    cache.mkdir(parents=True, exist_ok=True)
+    dirs = [Path("/System/Library/Fonts"), Path("/System/Library/Fonts/Supplemental"),
+            Path("/Library/Fonts"), Path.home() / "Library/Fonts"]
+    config = directory / "fonts.conf"
+    config.write_text('<?xml version="1.0"?>\n<!DOCTYPE fontconfig SYSTEM "fonts.dtd">\n<fontconfig>\n'
+                      + ''.join(f'<dir>{escape(str(p))}</dir>\n' for p in dirs if p.is_dir())
+                      + f'<cachedir>{escape(str(cache))}</cachedir>\n</fontconfig>\n', encoding="utf-8")
+    env["FONTCONFIG_FILE"] = str(config)
+    return env
+
+
 def convert_with_libreoffice(source, out, timeout):
     soffice = find_tool(
         "soffice",
@@ -88,6 +108,7 @@ def convert_with_libreoffice(source, out, timeout):
             "/usr/local/bin/soffice",
         ),
     )
+    env = font_environment(out)
     with tempfile.TemporaryDirectory(prefix="classroom-lo-") as profile:
         run(
             [
@@ -101,6 +122,7 @@ def convert_with_libreoffice(source, out, timeout):
                 str(source),
             ],
             timeout,
+            env=env,
         )
     pdf_candidates = list(out.glob("*.pdf"))
     if len(pdf_candidates) != 1:

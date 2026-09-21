@@ -1,0 +1,49 @@
+{
+  "name": "dsh-classroom-audio",
+  "version": "1.1.1",
+  "description": "Local-first classroom transcription on Apple Silicon with timestamps, upload attachment intake and resumable jobs",
+  "type": "module",
+  "main": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "1.1.0",
+    "@ffprobe-installer/ffprobe": "2.1.2"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-tools": "*",
+    "@deepseek-ai/dsh-credentials": "*"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/dsh-tools": {
+      "optional": true
+    },
+    "@deepseek-ai/dsh-credentials": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=22.16"
+  },
+  "license": "UNLICENSED",
+  "private": true,
+  "files": [
+    "bin/",
+    "lib/",
+    "cordis.patch.yml",
+    "requirements-local.txt",
+    "配置百炼密钥.command",
+    "README.md"
+  ]
+}

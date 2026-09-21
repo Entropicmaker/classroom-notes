@@ -1,0 +1,3 @@
+# Tested on Apple M4 / Python 3.12. Separate from system Python.
+mlx-qwen3-asr==0.4.4
+mlx==0.32.2

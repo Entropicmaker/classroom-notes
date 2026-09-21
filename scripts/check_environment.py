@@ -70,6 +70,12 @@ def main():
         if not path.is_file():
             errors.append(f"Missing skill script: {path}")
 
+    audio_cli = Path.home() / '.dsh' / 'vendor' / 'dsh-classroom-audio' / 'bin' / 'audio.mjs'
+    if audio_cli.is_file() and shutil.which('node'):
+        tools['classroom_audio_cli'] = str(audio_cli)
+    else:
+        warnings.append('Optional recording transcription plugin is unavailable; PPT-only work remains supported.')
+
     result = {
         "status": "error" if errors else "ready" if not warnings else "ready_with_warnings",
         "python": sys.version.split()[0],
@@ -79,6 +85,7 @@ def main():
         "tools": tools,
         "errors": errors,
         "warnings": warnings,
+        "audio_check": 'Run classroom_audio action=doctor to check the audio engine and key availability without uploading recordings.',
         "dsh_runtime_note": (
             "Prefer read_image with an image-capable model. On macOS, vision_ocr is a "
             "text-only fallback and may require a one-time DSH permission approval."

@@ -7,3 +7,40 @@ __pycache__/
 
 # macOS
 .DS_Store
+
+# Private runtime state and user inputs
+.dsh/
+.dsh-work/
+.classroom-imports/
+node_modules
+.venv/
+models/
+work/
+outputs/
+.env
+.env.*
+!.env.example
+.npmrc
+credentials*
+secrets*
+*.key
+*.pem
+*.p12
+*.log
+*.jsonl
+*.wav
+*.m4a
+*.mp3
+*.aiff
+*.flac
+*.mp4
+*.pdf
+*.pptx
+*.docx
+*.xlsx
+*.zip
+*.tgz
+*.raw.json
+*.transcript.*
+job.json
+local-state.json
