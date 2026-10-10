@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Read-only lookup/plan, or non-overwriting import of a note and local images."""
 import argparse, hashlib, json, os, re, urllib.parse
+from datetime import date
 from pathlib import Path
 
 DEFAULT=Path(__file__).resolve().parents[1]/'references/vault.json'
@@ -46,9 +47,24 @@ def prepare(a):
 def build_plan(a,state):
     cfg,vault,course,folder,receipts,src,key,existing=state
     if not a.title or not a.note:raise ValueError('--title and --note are required for plan/commit')
-    title=component(a.title.removesuffix('.md'));target=inside(folder,folder/(title+'.md'))
+    raw_title=component(a.title.removesuffix('.md'))
+    title=raw_title
+    if not a.custom_title:
+        m=re.fullmatch(r'(\d{4}|\d{2})[-.](\d{1,2})[-.](\d{1,2}) +(.+)',raw_title)
+        if not m:raise ValueError('Use YY.M.D 本节具体内容, for example 26.9.27 沉积岩的形成; explicit custom names require --custom-title')
+        year=int(m[1]);year=2000+year if year<100 else year
+        date(year,int(m[2]),int(m[3]))
+        topic=m[4].strip()
+        core=re.sub(r'（.*?）','',topic).strip()
+        if core in {course,a.course,'本节主题','本节具体内容'}:raise ValueError('Title requires the actual lesson topic, not the course name')
+        title=f'{year%100:02d}.{int(m[2])}.{int(m[3])} {topic}'
+    target=inside(folder,folder/(title+'.md'))
     if target.exists():raise FileExistsError('Refusing to overwrite existing note: '+str(target))
     draft=a.note.resolve();text=draft.read_text(encoding='utf-8')
+    heading=re.search(r'^# (.+)$',text,re.M)
+    if not a.custom_title:
+        if not heading or heading[1] not in {raw_title,title}:raise ValueError('Note H1 must match the lesson filename')
+        text=text[:heading.start(1)]+title+text[heading.end(1):]
     if re.search(r'!\[\[',text):raise ValueError('Draft images must use standard Markdown local links, not wikilinks')
     matches=list(IMAGE.finditer(text))
     if len(matches)!=len(re.findall(r'!\[',text)):
@@ -76,7 +92,7 @@ def build_plan(a,state):
     return target,data,files,recpath,receipt
 
 def main():
-    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('action',choices=['lookup','plan','commit']);ap.add_argument('--config',type=Path,default=DEFAULT);ap.add_argument('--course',required=True);ap.add_argument('--title');ap.add_argument('--note',type=Path);ap.add_argument('--source',type=Path,action='append',required=True);ap.add_argument('--new-version',action='store_true',help='Allow already-imported sources under a different, unused title')
+    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('action',choices=['lookup','plan','commit']);ap.add_argument('--config',type=Path,default=DEFAULT);ap.add_argument('--course',required=True);ap.add_argument('--title');ap.add_argument('--note',type=Path);ap.add_argument('--source',type=Path,action='append',required=True);ap.add_argument('--custom-title',action='store_true',help='Only for a user explicitly chosen filename');ap.add_argument('--new-version',action='store_true',help='Allow already-imported sources under a different, unused title')
     a=ap.parse_args();state=prepare(a);cfg,vault,course,folder,receipts,src,key,existing=state
     if a.action=='lookup':print(json.dumps({'course':course,'existing':existing},ensure_ascii=False));return
     if existing and not a.new_version:

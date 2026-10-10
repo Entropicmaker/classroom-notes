@@ -1,0 +1,4 @@
+interface:
+  display_name: "课堂笔记入库"
+  short_description: "完整保留课件知识，结合课堂录音融入老师讲解、重点与补充后入库"
+  default_prompt: "请使用 $classroom-notes 整理这些课件及随附课堂录音或转写，完整保留课件知识，把有证据的老师讲解、强调、补充和纠错融入对应章节并注明时间来源，标记未核实内容，按YY.M.D加本节具体内容写入学习万年历。"

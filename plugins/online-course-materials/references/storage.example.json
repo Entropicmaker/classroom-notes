@@ -1,0 +1,6 @@
+{
+  "materials_root": "/absolute/path/to/学习ppt",
+  "layout": "course/lesson",
+  "retain_after_import": "essential",
+  "cleanup_online_media_after_import": true
+}

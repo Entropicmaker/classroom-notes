@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.dsh-data/
+
+# Local dependencies and personal storage configuration
+scripts/vendor/
+references/storage.json
+.env
+.env.*
+*.log

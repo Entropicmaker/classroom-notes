@@ -1,0 +1,4 @@
+interface:
+  display_name: "学习视频整理"
+  short_description: "融合旁白、课件、动画与实拍过程，按主题写入带图学习笔记"
+  default_prompt: "使用 $online-course-materials 整理这个学习视频，按片段核对内容与过程，按YY.M.D加本节具体主题命名并入库，成功后清理网站视频和音频。"

@@ -1,0 +1,12 @@
+{
+  "_comment": "复制本文件为 references/vault.json 后修改。vault 请写成绝对路径（脚本不做 ~ 展开）。",
+  "vault": "/absolute/path/to/your-obsidian-vault",
+  "courses_dir": "03 课程",
+  "attachments_dir": "09 附件/课程",
+  "aliases": {
+    "地理信息系统": "GIS",
+    "gis": "GIS",
+    "高数": "高等数学",
+    "概率论": "概率论与数理统计"
+  }
+}
